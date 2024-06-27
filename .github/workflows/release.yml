@@ -42,20 +42,14 @@ jobs:
 
     - name: Create PR
       id: cpr
-      uses: peter-evans/create-pull-request@v6
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        commit-message: 'chore: Bump version to ${{ steps.extract_tag.outputs.tag }}'
-        title: 'chore: Bump version to ${{ steps.extract_tag.outputs.tag }}'
-        body: 'This PR was automatically created by the release workflow.'
-        branch: develop
-        base: main
-        draft: false
-        delete-branch: false
+      run: |
+        gh pr create \
+        --title "Release ${{ steps.extract_tag.outputs.tag }}" \
+        --body "Release ${{ steps.extract_tag.outputs.tag }}" \
+        --base develop \
+        --head main \
+        --repo ${{ github.repository }}
 
     - name: Merge PR
-      if: steps.cpr.outputs.pull-request-operation == 'created'
-      uses: peter-evans/enable-pull-request-automerge@v3
-      with:
-        token: ${{ secrets.GITHUB_TOKEN }}
-        pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+      run: |
+        gh pr merge ${{ steps.cpr.outputs.number }} --auto
