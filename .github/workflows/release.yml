@@ -4,9 +4,8 @@ permissions:
   contents: write
 
 on:
-  push:
-    tags:
-      - 'v**.**.**'
+  pull_request:
+    branches: [main]
 
 jobs:
   build-and-release:
@@ -14,10 +13,6 @@ jobs:
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-
-    - name: Extract tag name
-      id: extract_tag
-      run: echo "::set-output name=tag::$(echo ${GITHUB_REF#refs/tags/})"
 
     - name: Cache cargo registry
       uses: actions/cache@v4
@@ -40,20 +35,14 @@ jobs:
       with:
         files: target/x86_64-unknown-linux-gnu/release/libbearerauth.so
 
-    - name: Create PR
-      id: cpr
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+    - name: Generate a tag
+      id: tag
       run: |
-        gh pr create \
-        --title "Release ${{ steps.extract_tag.outputs.tag }}" \
-        --body "Release ${{ steps.extract_tag.outputs.tag }}" \
-        --base develop \
-        --head main \
-        --repo ${{ github.repository }}
-
-    - name: Merge PR
-      env:
-        GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: |
-        gh pr merge ${{ steps.cpr.outputs.number }} --auto
+        sed -n 's/^version = "\(.*\)"/\1/p' Cargo.toml
+    
+    - name: Create a release
+      uses: softprops/action-gh-release@v2
+      with:
+        name: ${{ steps.tag.outputs.version }}
+        tag_name: ${{ steps.tag.outputs.version }}
+        generate_release_notes: true
