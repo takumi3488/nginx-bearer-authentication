@@ -48,8 +48,6 @@ jobs:
     - name: Create PR
       id: cpr
       uses: peter-evans/create-pull-request@v6
-      with:
-        delete-branch: true
 
     - name: Merge PR
       uses: peter-evans/enable-pull-request-automerge@v3
