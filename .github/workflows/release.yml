@@ -45,8 +45,13 @@ jobs:
       with:
         files: target/x86_64-unknown-linux-gnu/release/libbearerauth.so
 
-    - name: Merge to main
-      uses: stefanzweifel/git-auto-commit-action@v5
+    - name: Create PR
+      id: cpr
+      uses: peter-evans/create-pull-request@v6
       with:
-        commit_message: "Merge ${GITHUB_REF#refs/tags/} to main"
-        branch: main
+        delete-branch: true
+
+    - name: Merge PR
+      uses: peter-evans/enable-pull-request-automerge@v3
+      with:
+        pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
