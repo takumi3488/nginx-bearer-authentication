@@ -10,15 +10,11 @@ on:
 
 jobs:
   build-and-release:
+    if: ${{ github.ref == 'refs/heads/develop' }}
     runs-on: ubuntu-latest
-
     steps:
     - name: Checkout
       uses: actions/checkout@v4
-
-    - name: Extract branch name
-      id: extract_branch
-      run: echo "::set-output name=branch::$(echo ${GITHUB_REF#refs/heads/})"
 
     - name: Extract tag name
       id: extract_tag
@@ -53,8 +49,8 @@ jobs:
         commit-message: 'chore: Bump version to ${{ steps.extract_tag.outputs.tag }}'
         title: 'chore: Bump version to ${{ steps.extract_tag.outputs.tag }}'
         body: 'This PR was automatically created by the release workflow.'
-        branch: ${{ steps.extract_tag.outputs.tag }}
-        base: ${{ steps.extract_branch.outputs.branch }}
+        branch: develop
+        base: main
         draft: false
         delete-branch: false
 
