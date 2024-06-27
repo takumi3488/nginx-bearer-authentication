@@ -16,6 +16,14 @@ jobs:
     - name: Checkout
       uses: actions/checkout@v4
 
+    - name: Extract branch name
+      id: extract_branch
+      run: echo "::set-output name=branch::$(echo ${GITHUB_REF#refs/heads/})"
+
+    - name: Extract tag name
+      id: extract_tag
+      run: echo "::set-output name=tag::$(echo ${GITHUB_REF#refs/tags/})"
+
     - name: Cache cargo registry
       uses: actions/cache@v4
       with:
@@ -36,3 +44,9 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         files: target/x86_64-unknown-linux-gnu/release/libbearerauth.so
+
+    - name: Merge to main
+      uses: stefanzweifel/git-auto-commit-action@v5
+      with:
+        commit_message: "Merge ${GITHUB_REF#refs/tags/} to main"
+        branch: main
