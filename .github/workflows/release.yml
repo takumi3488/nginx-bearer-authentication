@@ -56,8 +56,11 @@ jobs:
         branch: ${{ steps.extract_tag.outputs.tag }}
         base: ${{ steps.extract_branch.outputs.branch }}
         draft: false
+        delete-branch: false
 
     - name: Merge PR
+      if: steps.cpr.outputs.pull-request-operation == 'created'
       uses: peter-evans/enable-pull-request-automerge@v3
       with:
+        token: ${{ secrets.GITHUB_TOKEN }}
         pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
