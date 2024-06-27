@@ -48,6 +48,14 @@ jobs:
     - name: Create PR
       id: cpr
       uses: peter-evans/create-pull-request@v6
+      with:
+        token: ${{ secrets.GITHUB_TOKEN }}
+        commit-message: 'chore: Bump version to ${{ steps.extract_tag.outputs.tag }}'
+        title: 'chore: Bump version to ${{ steps.extract_tag.outputs.tag }}'
+        body: 'This PR was automatically created by the release workflow.'
+        branch: ${{ steps.extract_tag.outputs.tag }}
+        base: ${{ steps.extract_branch.outputs.branch }}
+        draft: false
 
     - name: Merge PR
       uses: peter-evans/enable-pull-request-automerge@v3
