@@ -28,13 +28,6 @@ jobs:
     - name: Build release
       run: cargo build --release --verbose --target x86_64-unknown-linux-gnu
 
-    - name: Release
-      uses: softprops/action-gh-release@v2
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      with:
-        files: target/x86_64-unknown-linux-gnu/release/libbearerauth.so
-
     - name: Generate a tag
       id: tag
       run: |
@@ -46,3 +39,4 @@ jobs:
         name: ${{ steps.tag.outputs.version }}
         tag_name: ${{ steps.tag.outputs.version }}
         generate_release_notes: true
+        files: target/x86_64-unknown-linux-gnu/release/libbearerauth.so
